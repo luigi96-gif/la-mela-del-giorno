@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>La Mela del Giorno</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icona-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="La Mela del Giorno">
+  <meta name="theme-color" content="#f7f3ea">
+  <meta name="robots" content="noindex, nofollow">
+</head>
+<body>
+  <header class="masthead">
+    <div class="masthead-meta">
+      <span id="today"></span>
+      <span id="edition-number"></span>
+    </div>
+    <h1 id="paper-name">&nbsp;</h1>
+    <p id="paper-tagline" class="tagline"></p>
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-view="edizione" role="tab">Edizione</button>
+      <button class="tab" data-view="redazione" role="tab">Redazione <span id="live-dot" class="live-dot" hidden></span></button>
+      <button class="tab" data-view="impostazioni" role="tab">Impostazioni</button>
+    </nav>
+  </header>
+
+  <div id="demo-banner" class="banner" hidden>
+    Modalità dimostrativa: Claude non è collegato, quindi gli agenti non scrivono né verificano davvero.
+  </div>
+
+  <main>
+    <!-- EDIZIONE -->
+    <section id="view-edizione" class="view">
+      <div class="edition-bar">
+        <label>Archivio
+          <select id="archive"></select>
+        </label>
+        <div class="edition-tools">
+          <form id="search-form" class="search" role="search">
+            <input id="search" type="search" placeholder="Cerca nell'archivio" aria-label="Cerca nell'archivio" enterkeyhint="search">
+          </form>
+          <button id="listen" type="button" class="tool-btn" aria-pressed="false">Ascolta</button>
+        </div>
+        <span id="edition-info" class="muted"></span>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div id="edition"></div>
+    </section>
+
+    <!-- REDAZIONE -->
+    <section id="view-redazione" class="view" hidden>
+      <div class="office-wrap">
+        <div id="office" class="office" aria-label="L'ufficio della redazione in 3D: clicca una persona per parlarle">
+          <aside id="agent-chat" class="agent-chat" hidden>
+            <header>
+              <span id="ac-avatar" class="avatar"></span>
+              <div class="ac-who">
+                <div id="ac-name" class="name"></div>
+                <div id="ac-status" class="small"></div>
+              </div>
+              <button id="ac-close" type="button" aria-label="Chiudi la conversazione">×</button>
+            </header>
+            <div id="ac-thread" class="ac-thread" aria-live="polite"></div>
+            <form id="ac-form" class="ac-form">
+              <textarea id="ac-input" rows="1" placeholder="Dai un'istruzione o fai una domanda…"></textarea>
+              <button class="primary" type="submit">Invia</button>
+            </form>
+          </aside>
+        </div>
+      </div>
+      <div class="room">
+        <aside class="desks">
+          <h2>In redazione</h2>
+          <div id="agents"></div>
+          <p class="muted small">Clicca una persona, qui o nell'ufficio, per parlarle a tu per tu. Nella stanza comune qui accanto, senza menzione risponde la caporedattrice e con <b>@tutti</b> l'intera redazione.</p>
+        </aside>
+        <div class="chat">
+          <div class="chat-bar">
+            <span id="phase" class="muted">Redazione a riposo</span>
+            <button id="run" class="primary">Fai uscire l'edizione ora</button>
+          </div>
+          <div id="messages" class="messages" aria-live="polite"></div>
+          <div id="typing" class="typing muted"></div>
+          <form id="composer" class="composer">
+            <textarea id="input" rows="1" placeholder="Scrivi alla redazione…  (es. @Giulia quanto è affidabile questa voce?)"></textarea>
+            <button class="primary" type="submit">Invia</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- IMPOSTAZIONI -->
+    <section id="view-impostazioni" class="view" hidden>
+      <div class="settings">
+        <div class="panel">
+          <h2>Fonti</h2>
+          <p class="muted">I feed RSS che la redazione legge ogni giorno.</p>
+          <ul id="sources" class="list"></ul>
+          <form id="source-form" class="inline-form">
+            <input id="source-name" placeholder="Nome della testata" required>
+            <input id="source-url" placeholder="Indirizzo del feed RSS (https://…)" required>
+            <select id="source-lang"><option value="en">Inglese</option><option value="it">Italiano</option></select>
+            <button class="primary" type="submit">Aggiungi</button>
+          </form>
+          <p id="source-msg" class="muted small"></p>
+        </div>
+        <div class="panel">
+          <h2>Linee editoriali</h2>
+          <p class="muted">Le indicazioni stabili che hai dato in redazione. Per aggiungerne una, scrivila nella stanza (es. «d'ora in poi più spazio al Mac»).</p>
+          <ul id="directives" class="list"></ul>
+          <h2>Uscita</h2>
+          <p class="muted">La redazione prepara e pubblica l'edizione ogni giorno alle <b id="edition-time"></b> (ora italiana), o al primo avvio della giornata.</p>
+          <p class="muted small">Il via libera lo dà Elena, la caporedattrice, con il controllo finale prima della pubblicazione.</p>
+          <div id="cloud-box" hidden>
+            <h2>Redazione nel cloud</h2>
+            <p class="muted">L'edizione del mattino esce nel cloud anche a Mac spento, e arriva qui da sola. Fonti e linee editoriali decise qui valgono anche lì dopo averle inviate.</p>
+            <button id="cloud-push" class="primary" type="button">Invia le impostazioni al cloud</button>
+            <p id="cloud-msg" class="muted small"></p>
+          </div>
+          <h2>Leggere dal telefono</h2>
+          <p id="lan-info" class="muted"></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav id="section-bar" class="section-bar" aria-label="Sezioni del giornale" hidden></nav>
+
+  <div id="login" class="login" hidden>
+    <form id="login-form" class="login-box">
+      <h2>Il giornale</h2>
+      <input id="password" type="password" placeholder="Password" autocomplete="current-password" required>
+      <button class="primary" type="submit">Entra</button>
+      <p id="login-msg" class="muted small"></p>
+    </form>
+  </div>
+
+  <script>window.__GIORNALE_STATICO__ = true;</script>
+  <script defer src="app.js"></script>
+</body>
+</html>
