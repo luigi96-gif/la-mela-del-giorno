@@ -1,0 +1,1 @@
+{"name": "La Mela del Giorno", "short_name": "La Mela del Giorno", "start_url": ".", "display": "standalone", "background_color": "#f7f3ea", "theme_color": "#f7f3ea", "icons": [{"src": "icona-180.png", "sizes": "180x180", "type": "image/png"}, {"src": "icona-512.png", "sizes": "512x512", "type": "image/png"}]}
